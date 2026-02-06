@@ -2,10 +2,11 @@ import { Global, css } from '@emotion/react';
 
 const style = css`
 @font-face {
-    font-family: 'Pretendard';
-    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Thin.woff2') format('woff2');
-    font-weight: 100 900;
-    font-display: swap;
+  font-family: 'Pretendard';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.3.9/dist/web/variable/PretendardVariable.woff2')
+    format('woff2-variations');
+  font-weight: 100 900;
+  font-display: swap;
 }
 
 
