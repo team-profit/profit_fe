@@ -10,3 +10,4 @@ export * from './PLACE';
 export * from './CHATICON';
 export * from './ADDICON';
 export * from './TRASH';
+export * from './EXPORT';

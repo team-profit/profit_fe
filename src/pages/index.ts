@@ -4,3 +4,4 @@ export * from './HomePage';
 export * from './PostDetailPage';
 export * from './AddPostPage';
 export * from './EditPostPage';
+export * from './CalendarPage';

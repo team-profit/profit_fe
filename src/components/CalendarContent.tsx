@@ -23,12 +23,30 @@ const calendarData: CalendarData = {
   ],
 };
 
-export const CalendarContent = () => {
+type CalendarContentProps = {
+  onMonthChange?: (year: number, month: number) => void;
+};
+
+export const CalendarContent = ({ onMonthChange }: CalendarContentProps) => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [_, setActiveStartDate] = useState<Date>(new Date());
 
   const hasData = (date: Date) => {
     const key = date.toISOString().split('T')[0];
     return Boolean(calendarData[key]);
+  };
+
+  const handleActiveStartDateChange = ({
+    activeStartDate,
+  }: {
+    activeStartDate: Date | null;
+  }) => {
+    if (activeStartDate) {
+      setActiveStartDate(activeStartDate);
+      const year = activeStartDate.getFullYear();
+      const month = activeStartDate.getMonth() + 1; // 0-based이므로 +1
+      onMonthChange?.(year, month);
+    }
   };
 
   const selectedKey = selectedDate
@@ -107,6 +125,7 @@ export const CalendarContent = () => {
 
       <Calendar
         onClickDay={setSelectedDate}
+        onActiveStartDateChange={handleActiveStartDateChange}
         tileContent={({ date }) => (hasData(date) ? <Dot /> : null)}
       />
 
@@ -177,6 +196,7 @@ export const CalendarContent = () => {
 
 const Container = styled.div`
   position: relative;
+  width: 100%;
 `;
 
 const Dot = styled.div`
