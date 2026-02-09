@@ -5,3 +5,4 @@ export * from './PostDetailPage';
 export * from './AddPostPage';
 export * from './EditPostPage';
 export * from './CalendarPage';
+export * from './Mypage';
