@@ -11,3 +11,8 @@ export * from './CHATICON';
 export * from './ADDICON';
 export * from './TRASH';
 export * from './EXPORT';
+export * from './MONEYICON';
+export * from './NOMONEYICON';
+export * from './CLOSEICON';
+export * from './CHECKICON';
+export * from './PENICON';

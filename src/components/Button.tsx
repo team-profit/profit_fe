@@ -52,6 +52,34 @@ export const SmallButton = ({
   );
 };
 
+export const CircleButton = ({
+  onClick,
+  backgroundColor = colors.gray[50],
+  children,
+  borderColor = colors.gray[100],
+}: IButtonType) => {
+  return (
+    <CircleButtonWrapper
+      onClick={onClick}
+      backgroundColor={backgroundColor}
+      borderColor={borderColor}
+    >
+      {children}
+    </CircleButtonWrapper>
+  );
+};
+
+const CircleButtonWrapper = styled.button<Omit<IButtonType, 'onClick'>>`
+  padding: 8px;
+  border-radius: 100px;
+  background-color: ${({ backgroundColor }) => backgroundColor};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border: 1px solid ${({ borderColor }) => borderColor};
+`;
+
 const LargeButtonWrapper = styled.button<Omit<IButtonType, 'onClick'>>`
   width: ${({ width }) => width};
   padding: 14px 40px;

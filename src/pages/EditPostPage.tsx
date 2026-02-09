@@ -150,6 +150,11 @@ export const EditPostPage = () => {
     return new Date();
   };
 
+  const handleEditClick = () => {
+    //수정 api
+    navigate('/main/home');
+  };
+
   return (
     <Flex paddingTop="20px" isColumn gap={32} width="100%">
       <Flex width="100%" justifyContent="space-between" alignItems="center">
@@ -160,6 +165,7 @@ export const EditPostPage = () => {
           <SmallButton
             backgroundColor={colors.blue[500]}
             color={colors.gray[0]}
+            onClick={handleEditClick}
           >
             수정하기
           </SmallButton>

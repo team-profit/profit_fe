@@ -1,11 +1,26 @@
 import { useState } from 'react';
 import { colors, Flex, Text } from '../design-token';
 import { ShipperInfo, TransportInfo } from '../types';
-import { AmountContent, MapContent, SubTitleField } from '../components';
+import {
+  AmountContent,
+  CircleButton,
+  MapContent,
+  SubTitleField,
+} from '../components';
 import styled from '@emotion/styled';
+import {
+  CHECKICON,
+  CLOSEICON,
+  MONEYICON,
+  NOMONEYICON,
+  PENICON,
+  TRASH,
+} from '../assets';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Modal } from '../components/Modal';
 
 export const PostDetailPage = () => {
-  const [transportInfo] = useState<TransportInfo>({
+  const [transportInfo, setTransportInfo] = useState<TransportInfo>({
     isPaymentCompleted: true,
     isTransportCompleted: false,
     netProfit: 100000, // 순수익
@@ -34,6 +49,45 @@ export const PostDetailPage = () => {
     name: '박김치', // 화주 이름
     phoneNumber: '010-1234-1234', // 연락처
   });
+
+  const [isDelModal, setIsDelModal] = useState<boolean>(false);
+  const [isCompleteTransport, setIsCompleteTransport] =
+    useState<boolean>(false); //운송 완료
+  const [isCancelTransport, setIsCancelTransport] = useState<boolean>(false); //운송 완료 취소
+  const [isCompletePayment, setIsCompletePayment] = useState<boolean>(false); //수금완료
+  const [isCancelPayment, setIsCancelPayment] = useState<boolean>(false); //수금 완료 취소
+
+  const navigate = useNavigate();
+  const { id } = useParams();
+
+  const handleDelClick = () => {
+    //삭제 api
+    setIsDelModal(false);
+  };
+
+  const handlePaymentClick = () => {
+    if (transportInfo.isPaymentCompleted) {
+      setIsCancelPayment(true);
+    } else {
+      setIsCompletePayment(true);
+    }
+    // setTransportInfo((prev) => ({
+    //   ...prev,
+    //   isPaymentCompleted: !transportInfo.isPaymentCompleted,
+    // }));
+  };
+
+  const handleTransportClick = () => {
+    if (transportInfo.isTransportCompleted) {
+      setIsCancelTransport(true);
+    } else {
+      setIsCompleteTransport(true);
+    }
+    // setTransportInfo((prev) => ({
+    //   ...prev,
+    //   isTransportCompleted: !transportInfo.isTransportCompleted,
+    // }));
+  };
 
   return (
     <div>
@@ -102,9 +156,136 @@ export const PostDetailPage = () => {
           />
         </Flex>
       </Flex>
+      <BtnWrapper>
+        <CircleButton
+          onClick={handleTransportClick}
+          backgroundColor={
+            transportInfo.isTransportCompleted
+              ? colors.blue[300]
+              : colors.red[400]
+          }
+          borderColor={
+            transportInfo.isTransportCompleted
+              ? colors.blue[300]
+              : colors.red[400]
+          }
+        >
+          {transportInfo.isTransportCompleted ? <CHECKICON /> : <CLOSEICON />}
+        </CircleButton>
+        <CircleButton
+          onClick={handlePaymentClick}
+          backgroundColor={
+            transportInfo.isPaymentCompleted
+              ? colors.blue[300]
+              : colors.red[400]
+          }
+          borderColor={
+            transportInfo.isPaymentCompleted
+              ? colors.blue[300]
+              : colors.red[400]
+          }
+        >
+          {transportInfo.isPaymentCompleted ? <MONEYICON /> : <NOMONEYICON />}
+        </CircleButton>
+        <CircleButton onClick={() => navigate(`/main/edit/post/${id}`)}>
+          <PENICON />
+        </CircleButton>
+        <CircleButton onClick={() => setIsDelModal(true)}>
+          <TRASH />
+        </CircleButton>
+      </BtnWrapper>
+      {isDelModal && (
+        <Modal
+          setIsOpen={setIsDelModal}
+          isOpen={isDelModal}
+          isError
+          onClick={handleDelClick}
+          title="정말 삭제하시겠습니까?"
+          subTitle="삭제하시면 다시 되돌릴 수 없습니다"
+          btnTitle="삭제하기"
+        />
+      )}
+      {isCompleteTransport && (
+        <Modal
+          setIsOpen={setIsCompleteTransport}
+          isOpen={isCompleteTransport}
+          onClick={() => {
+            setTransportInfo((prev) => ({
+              ...prev,
+              isTransportCompleted: true,
+            }));
+            setIsCompleteTransport(false); // 모달 닫기
+          }}
+          title="운송 완료하시겠습니까?"
+          subTitle="운송 완료 처리와 동시에 완료 시간이 자동 저장됩니다"
+          btnTitle="완료하기"
+        />
+      )}
+
+      {isCancelTransport && (
+        <Modal
+          setIsOpen={setIsCancelTransport}
+          isOpen={isCancelTransport}
+          onClick={() => {
+            setTransportInfo((prev) => ({
+              ...prev,
+              isTransportCompleted: false,
+            }));
+            setIsCancelTransport(false); // 모달 닫기
+          }}
+          title="운송 취소하시겠습니까?"
+          subTitle="취소 시 운송 완료가 처리되지 않습니다"
+          btnTitle="취소하기"
+          isError
+        />
+      )}
+
+      {isCompletePayment && (
+        <Modal
+          setIsOpen={setIsCompletePayment}
+          isOpen={isCompletePayment}
+          onClick={() => {
+            setTransportInfo((prev) => ({
+              ...prev,
+              isPaymentCompleted: true,
+            }));
+            setIsCompletePayment(false);
+          }}
+          title="수금 완료하시겠습니까?"
+          subTitle="수금이 완료되면 해당 내역이 저장됩니다"
+          btnTitle="완료하기"
+        />
+      )}
+      {isCancelPayment && (
+        <Modal
+          setIsOpen={setIsCancelPayment}
+          isOpen={isCancelPayment}
+          onClick={() => {
+            setTransportInfo((prev) => ({
+              ...prev,
+              isPaymentCompleted: false,
+            }));
+            setIsCancelPayment(false); // 모달 닫기
+          }}
+          title="수금 취소하시겠습니까?"
+          subTitle="취소 시 수금 완료가 처리되지 않습니다"
+          btnTitle="취소하기"
+          isError
+        />
+      )}
     </div>
   );
 };
+
+const BtnWrapper = styled.div`
+  position: fixed;
+  bottom: 70px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 10;
+`;
 
 const StatusContent = styled.div`
   width: 100%;
