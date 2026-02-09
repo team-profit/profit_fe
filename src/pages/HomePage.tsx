@@ -9,7 +9,13 @@ export const HomePage = () => {
       place: string;
       time: { startTime: string; endTime: string };
     }[]
-  >([{ place: '경주시장', time: { startTime: '10:00', endTime: '12:00' } }]);
+  >([
+    {
+      id: 1,
+      place: '경주시장',
+      time: { startTime: '10:00', endTime: '12:00' },
+    },
+  ]);
 
   const today = new Date();
   const month = today.getMonth() + 1;
