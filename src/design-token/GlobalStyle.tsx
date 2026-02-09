@@ -1,14 +1,7 @@
 import { Global, css } from '@emotion/react';
 
 const style = css`
-@font-face {
-  font-family: 'Pretendard';
-  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.3.9/dist/web/variable/PretendardVariable.woff2')
-    format('woff2-variations');
-  font-weight: 100 900;
-  font-display: swap;
-}
-
+  @import url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.3.9/dist/web/static/pretendard.css');
 
   * {
     margin: 0;
@@ -18,9 +11,16 @@ const style = css`
     border: 0;
     outline: unset;
     list-style: none;
-    font-family: 'Pretendard';
+    font-family:
+      'Pretendard',
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      'Apple SD Gothic Neo',
+      'Noto Sans KR',
+      sans-serif;
     font-style: normal;
-    font-weight:  500;
+    font-weight: 500;
 
     -webkit-user-select: none;
     -moz-user-select: none;
