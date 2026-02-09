@@ -117,10 +117,14 @@ export const EditPostPage = () => {
     setTransportInfo((prev) => ({
       ...prev,
       dateAndTime: {
-        ...prev.dateAndTime,
-        [showDatePicker.type === 'start'
-          ? 'startDateAndTime'
-          : 'endDateAndTime']: formattedDate,
+        startDateAndTime:
+          showDatePicker.type === 'start'
+            ? formattedDate
+            : prev.dateAndTime?.startDateAndTime || '',
+        endDateAndTime:
+          showDatePicker.type === 'end'
+            ? formattedDate
+            : prev.dateAndTime?.endDateAndTime || '',
       },
     }));
 
@@ -143,7 +147,7 @@ export const EditPostPage = () => {
     if (dateString) {
       return new Date(dateString.replace(':', 'T'));
     }
-    return new Date(); // 오늘 날짜로 기본값 설정
+    return new Date();
   };
 
   return (

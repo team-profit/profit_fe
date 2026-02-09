@@ -27,7 +27,9 @@ export const Inputs = ({
       if (!/^\d*$/.test(nextValue)) return;
     }
 
-    onChange(nextValue);
+    if (onChange) {
+      onChange(nextValue);
+    }
   };
 
   return (
