@@ -7,6 +7,7 @@ import {
   LoginPage,
   MainPage,
   Mypage,
+  NotificationPage,
   PostDetailPage,
 } from './pages';
 import { AppLayout, PrivateLayout } from './layouts';
@@ -51,6 +52,10 @@ export const router = createBrowserRouter([
           {
             path: 'mypage',
             element: <Mypage />,
+          },
+          {
+            path: 'notification',
+            element: <NotificationPage />,
           },
         ],
       },
