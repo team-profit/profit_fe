@@ -6,6 +6,7 @@ import {
   HomePage,
   LoginPage,
   MainPage,
+  Mypage,
   PostDetailPage,
 } from './pages';
 import { AppLayout, PrivateLayout } from './layouts';
@@ -46,6 +47,10 @@ export const router = createBrowserRouter([
           {
             path: 'calendar',
             element: <CalendarPage />,
+          },
+          {
+            path: 'mypage',
+            element: <Mypage />,
           },
         ],
       },
