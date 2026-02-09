@@ -5,7 +5,7 @@ import styled from '@emotion/styled';
 interface IMapContent {
   address: string;
   detailAddress: string;
-  postalAddress: number;
+  postalAddress: string;
   label?: string;
 }
 

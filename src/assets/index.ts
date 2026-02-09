@@ -7,4 +7,6 @@ export * from './CALENDAR';
 export * from './HOME';
 export * from './MYPAGE';
 export * from './PLACE';
-export * from './CHATICON'
+export * from './CHATICON';
+export * from './ADDICON';
+export * from './TRASH';
