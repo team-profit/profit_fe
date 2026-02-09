@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 import {
   AddPostPage,
+  CalendarPage,
   EditPostPage,
   HomePage,
   LoginPage,
@@ -41,6 +42,10 @@ export const router = createBrowserRouter([
           {
             path: 'edit/post/:id',
             element: <EditPostPage />,
+          },
+          {
+            path: 'calendar',
+            element: <CalendarPage />,
           },
         ],
       },
