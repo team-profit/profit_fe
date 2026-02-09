@@ -5,7 +5,7 @@ import { AmountContent, MapContent, SubTitleField } from '../components';
 import styled from '@emotion/styled';
 
 export const PostDetailPage = () => {
-  const [transportInfo, setTransportInfo] = useState<TransportInfo>({
+  const [transportInfo] = useState<TransportInfo>({
     isPaymentCompleted: true,
     isTransportCompleted: false,
     netProfit: 100000, // 순수익
@@ -28,7 +28,7 @@ export const PostDetailPage = () => {
     dateAndTime: { startDateAndTime: '10:00', endDateAndTime: '20:00' }, //상차, 하차 시간
   });
 
-  const [shipperInfo, setShipperInfo] = useState<ShipperInfo>({
+  const [shipperInfo] = useState<ShipperInfo>({
     companyName: '김가네 김치찜', // 상호명
     businessRegistrationNumber: '1234502-3393', // 사업자 등록 번호
     name: '박김치', // 화주 이름
