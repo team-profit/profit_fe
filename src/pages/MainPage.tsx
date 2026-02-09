@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { LOGO } from '../assets';
 // import { CHATICON } from '../assets';
 import { LargeButton } from '../components';
@@ -5,8 +6,9 @@ import { Flex } from '../design-token';
 import styled from '@emotion/styled';
 
 export const MainPage = () => {
+  const navigate = useNavigate();
   return (
-    <Flex justifyContent="center" isColumn alignItems="center" height="100vh">
+    <Flex justifyContent="center" isColumn alignItems="center" height="90vh">
       <LOGO />
       {/* <BtnWrapper>
         <LargeButton
@@ -19,7 +21,9 @@ export const MainPage = () => {
         </LargeButton>
       </BtnWrapper> */}
       <BtnWrapper>
-        <LargeButton width="100%">로그인</LargeButton>
+        <LargeButton width="100%" onClick={() => navigate('/login')}>
+          로그인
+        </LargeButton>
       </BtnWrapper>
     </Flex>
   );

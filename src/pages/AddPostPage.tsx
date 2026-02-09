@@ -93,6 +93,11 @@ export const AddPostPage = () => {
     setShowPostcode({ show: false, type: null });
   };
 
+  const handleCreateClick = () => {
+    //생성 api
+    navigate('/main/home');
+  };
+
   return (
     <Flex paddingTop="20px" isColumn gap={32} width="100%">
       <Flex width="100%" justifyContent="space-between" alignItems="center">
@@ -103,6 +108,7 @@ export const AddPostPage = () => {
           <SmallButton
             backgroundColor={colors.blue[500]}
             color={colors.gray[0]}
+            onClick={handleCreateClick}
           >
             생성하기
           </SmallButton>

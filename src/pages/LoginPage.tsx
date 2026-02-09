@@ -3,6 +3,7 @@ import { LOGO } from '../assets';
 import { Inputs, LargeButton } from '../components';
 import { colors, Flex, Text } from '../design-token';
 import styled from '@emotion/styled';
+import { useNavigate } from 'react-router-dom';
 
 export const LoginPage = () => {
   const [datas, setDatas] = useState<{ id: string; password: string }>({
@@ -13,6 +14,8 @@ export const LoginPage = () => {
   const onChange = (key: 'id' | 'password', value: string) => {
     setDatas((prev) => ({ ...prev, [key]: value }));
   };
+
+  const navigate = useNavigate();
   return (
     <Flex alignItems="center" paddingTop="78px" isColumn gap={200} width="100%">
       <Flex isColumn gap={98} width="100%">
@@ -43,7 +46,9 @@ export const LoginPage = () => {
         </Flex>
       </Flex>
       <BtnWrapper>
-        <LargeButton width="100%">로그인</LargeButton>
+        <LargeButton width="100%" onClick={() => navigate('/main/home')}>
+          로그인
+        </LargeButton>
       </BtnWrapper>
     </Flex>
   );

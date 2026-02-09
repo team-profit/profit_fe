@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { colors, Flex, Text } from '../design-token';
 import { PostContent } from '../components';
+import { useNavigate } from 'react-router-dom';
 
 export const HomePage = () => {
   const [datas, _] = useState<
@@ -16,6 +17,8 @@ export const HomePage = () => {
       time: { startTime: '10:00', endTime: '12:00' },
     },
   ]);
+
+  const navigate = useNavigate();
 
   const today = new Date();
   const month = today.getMonth() + 1;
@@ -43,7 +46,12 @@ export const HomePage = () => {
       </Flex>
       <Flex width="100%" isColumn gap={12}>
         {datas.map((data) => (
-          <PostContent place={data.place} key={data.id} time={data.time} />
+          <PostContent
+            onClick={() => navigate(`/main/detail/${data.id}`)}
+            place={data.place}
+            key={data.id}
+            time={data.time}
+          />
         ))}
       </Flex>
     </Flex>
