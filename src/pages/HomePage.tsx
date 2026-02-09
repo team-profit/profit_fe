@@ -3,7 +3,7 @@ import { colors, Flex, Text } from '../design-token';
 import { PostContent } from '../components';
 
 export const HomePage = () => {
-  const [datas, setDatas] = useState<
+  const [datas, _] = useState<
     {
       id: number;
       place: string;
