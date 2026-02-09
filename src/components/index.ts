@@ -6,3 +6,4 @@ export * from './Inputs';
 export * from './MapContent';
 export * from './PostContent';
 export * from './TabBar';
+export * from './SubTitleField';

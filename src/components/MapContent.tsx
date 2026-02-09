@@ -6,15 +6,20 @@ interface IMapContent {
   address: string;
   detailAddress: string;
   postalAddress: number;
+  label?: string;
 }
 
 export const MapContent = ({
   address,
   detailAddress,
   postalAddress,
+  label,
 }: IMapContent) => {
   return (
-    <div>
+    <Flex isColumn gap={8} width="100%">
+      <Text fontSize={12} fontWeight={400}>
+        {label}
+      </Text>
       <ContentWrapper>
         <Flex gap={8} alignItems="center">
           <PLACE />
@@ -26,7 +31,7 @@ export const MapContent = ({
           {detailAddress}
         </Text>
       </ContentWrapper>
-    </div>
+    </Flex>
   );
 };
 
