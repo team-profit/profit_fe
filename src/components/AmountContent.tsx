@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
 import { colors, Flex, Text } from '../design-token';
+import { TRASH } from '../assets';
 
 interface IAmountContentType extends ContentType {
   subContent?: { title: string; amount: number }[];
@@ -10,6 +11,8 @@ interface ContentType {
   amount?: number;
   content?: string;
   isString?: boolean;
+  isEdit?: boolean;
+  delClick?: () => void;
 }
 
 export const AmountContent = ({
@@ -40,15 +43,22 @@ export const AmountContent = ({
   );
 };
 
-const Content = ({ amount, title }: ContentType) => {
+export const Content = ({ amount, title, isEdit, delClick }: ContentType) => {
   return (
     <ContentWrapper>
-      <Text fontSize={10} fontWeight={600} color={colors.gray[800]}>
-        {title}
-      </Text>
-      <Text fontSize={16} fontWeight={600} color={colors.gray[1000]}>
-        {amount}원
-      </Text>
+      <Flex isColumn gap={4}>
+        <Text fontSize={10} fontWeight={600} color={colors.gray[800]}>
+          {title}
+        </Text>
+        <Text fontSize={16} fontWeight={600} color={colors.gray[1000]}>
+          {amount}원
+        </Text>
+      </Flex>
+      {isEdit && delClick && (
+        <DelButton onClick={delClick}>
+          <TRASH />
+        </DelButton>
+      )}
     </ContentWrapper>
   );
 };
@@ -59,9 +69,10 @@ const ContentWrapper = styled.div`
   border: 1px solid ${colors.gray[100]};
   background-color: ${colors.gray[0]};
   display: flex;
-  flex-direction: column;
   gap: 4px;
-  justify-content: center;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 8px;
 `;
 
 const AmountWrapper = styled.div`
@@ -74,4 +85,15 @@ const AmountWrapper = styled.div`
   flex-direction: column;
   gap: 20px;
   justify-content: center;
+`;
+
+const DelButton = styled.button`
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 100px;
+  border: 1px solid ${colors.gray[100]};
+  background-color: ${colors.gray[50]};
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;

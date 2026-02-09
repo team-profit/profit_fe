@@ -18,12 +18,12 @@ export const PostDetailPage = () => {
     loadingLocation: {
       address: '대전시장', // 상차 주소
       detailAddress: '대전광역시 유성구', // 상차 상세 주소
-      postalAddress: 10020, //우편 주소
+      postalAddress: '10020', //우편 주소
     },
     unloadingLocation: {
       address: '세종시장', // 하차 주소
       detailAddress: '세종특별시', // 하차 상세 주소
-      postalAddress: 30202, //우편주소
+      postalAddress: '30202', //우편주소
     },
     dateAndTime: { startDateAndTime: '10:00', endDateAndTime: '20:00' }, //상차, 하차 시간
   });
@@ -43,8 +43,8 @@ export const PostDetailPage = () => {
             {transportInfo.loadingLocation.address}
           </Text>
           <Text fontSize={16} fontWeight={400} color={colors.gray[600]}>
-            {transportInfo.dateAndTime.startDateAndTime} ~{' '}
-            {transportInfo.dateAndTime.endDateAndTime}
+            {transportInfo.dateAndTime?.startDateAndTime} ~{' '}
+            {transportInfo.dateAndTime?.endDateAndTime}
           </Text>
         </Flex>
         <Flex isColumn gap={20} width="100%">
