@@ -1,5 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom';
-import { HomePage, LoginPage, MainPage } from './pages';
+import { HomePage, LoginPage, MainPage, PostDetailPage } from './pages';
 import { AppLayout, PrivateLayout } from './layouts';
 
 export const router = createBrowserRouter([
@@ -22,6 +22,10 @@ export const router = createBrowserRouter([
           {
             path: 'home',
             element: <HomePage />,
+          },
+          {
+            path: 'detail/:id',
+            element: <PostDetailPage />,
           },
         ],
       },
