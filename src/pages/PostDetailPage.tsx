@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { colors, Flex, Text } from '../design-token';
-import { ShipperInfo, TransportInfo } from '../types';
 import {
   AmountContent,
   CircleButton,
@@ -18,38 +17,17 @@ import {
 } from '../assets';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Modal } from '../components/Modal';
+import {
+  useDeliveryCollectCancelPatch,
+  useDeliveryCollectPatch,
+  useDeliveryDetailGet,
+  useDeliveryPostDelete,
+  useDeliveryTransportCancelPatch,
+  useDeliveryTransportPatch,
+} from '../apis';
+import { formatDateTimeDisplay } from '../hooks';
 
 export const PostDetailPage = () => {
-  const [transportInfo, setTransportInfo] = useState<TransportInfo>({
-    isPaymentCompleted: true,
-    isTransportCompleted: false,
-    netProfit: 100000, // 순수익
-    receivedAmount: 100000, // 받은 금액
-    expenses: [
-      { title: '세금', amount: 100000 },
-      { title: '기타', amount: 1000 },
-    ], // 지출 금액 목록
-    totalExpenseAmount: 100000, // 총 지출 금액
-    loadingLocation: {
-      address: '대전시장', // 상차 주소
-      detailAddress: '대전광역시 유성구', // 상차 상세 주소
-      postalAddress: '10020', //우편 주소
-    },
-    unloadingLocation: {
-      address: '세종시장', // 하차 주소
-      detailAddress: '세종특별시', // 하차 상세 주소
-      postalAddress: '30202', //우편주소
-    },
-    dateAndTime: { startDateAndTime: '10:00', endDateAndTime: '20:00' }, //상차, 하차 시간
-  });
-
-  const [shipperInfo] = useState<ShipperInfo>({
-    companyName: '김가네 김치찜', // 상호명
-    businessRegistrationNumber: '1234502-3393', // 사업자 등록 번호
-    name: '박김치', // 화주 이름
-    phoneNumber: '010-1234-1234', // 연락처
-  });
-
   const [isDelModal, setIsDelModal] = useState<boolean>(false);
   const [isCompleteTransport, setIsCompleteTransport] =
     useState<boolean>(false); //운송 완료
@@ -59,10 +37,35 @@ export const PostDetailPage = () => {
 
   const navigate = useNavigate();
   const { id } = useParams();
+  const deliveryId = Number(id);
+
+  const { data, isLoading } = useDeliveryDetailGet(deliveryId);
+  const deliveryTransportApi = useDeliveryTransportPatch(deliveryId);
+  const deliveryTransportCancelApi =
+    useDeliveryTransportCancelPatch(deliveryId);
+  const deliveryCollectApi = useDeliveryCollectPatch(deliveryId);
+  const deliveryCollectCancelApi = useDeliveryCollectCancelPatch(deliveryId);
+  const deliveryPostDeleteApi = useDeliveryPostDelete(deliveryId);
+
+  if (isLoading || !data) return <div>로딩중...</div>;
+
+  const { transportInfo, shipperInfo } = data;
+
+  const formattedStart = formatDateTimeDisplay(
+    transportInfo.dateAndTime.startDateAndTime,
+  );
+
+  const formattedEnd = transportInfo.dateAndTime.endDateAndTime
+    ? formatDateTimeDisplay(transportInfo.dateAndTime.endDateAndTime)
+    : '진행중';
 
   const handleDelClick = () => {
-    //삭제 api
-    setIsDelModal(false);
+    deliveryPostDeleteApi.mutate(undefined, {
+      onSuccess: () => {
+        setIsDelModal(false);
+        navigate('/main/home');
+      },
+    });
   };
 
   const handlePaymentClick = () => {
@@ -71,10 +74,6 @@ export const PostDetailPage = () => {
     } else {
       setIsCompletePayment(true);
     }
-    // setTransportInfo((prev) => ({
-    //   ...prev,
-    //   isPaymentCompleted: !transportInfo.isPaymentCompleted,
-    // }));
   };
 
   const handleTransportClick = () => {
@@ -83,10 +82,6 @@ export const PostDetailPage = () => {
     } else {
       setIsCompleteTransport(true);
     }
-    // setTransportInfo((prev) => ({
-    //   ...prev,
-    //   isTransportCompleted: !transportInfo.isTransportCompleted,
-    // }));
   };
 
   return (
@@ -97,8 +92,7 @@ export const PostDetailPage = () => {
             {transportInfo.loadingLocation.address}
           </Text>
           <Text fontSize={16} fontWeight={400} color={colors.gray[600]}>
-            {transportInfo.dateAndTime?.startDateAndTime} ~{' '}
-            {transportInfo.dateAndTime?.endDateAndTime}
+            {formattedStart} ~ {formattedEnd}
           </Text>
         </Flex>
         <Flex isColumn gap={20} width="100%">
@@ -210,11 +204,11 @@ export const PostDetailPage = () => {
           setIsOpen={setIsCompleteTransport}
           isOpen={isCompleteTransport}
           onClick={() => {
-            setTransportInfo((prev) => ({
-              ...prev,
-              isTransportCompleted: true,
-            }));
-            setIsCompleteTransport(false); // 모달 닫기
+            deliveryTransportApi.mutate(undefined, {
+              onSuccess: () => {
+                setIsCompleteTransport(false); // 모달 닫기
+              },
+            });
           }}
           title="운송 완료하시겠습니까?"
           subTitle="운송 완료 처리와 동시에 완료 시간이 자동 저장됩니다"
@@ -227,11 +221,11 @@ export const PostDetailPage = () => {
           setIsOpen={setIsCancelTransport}
           isOpen={isCancelTransport}
           onClick={() => {
-            setTransportInfo((prev) => ({
-              ...prev,
-              isTransportCompleted: false,
-            }));
-            setIsCancelTransport(false); // 모달 닫기
+            deliveryTransportCancelApi.mutate(undefined, {
+              onSuccess: () => {
+                setIsCancelTransport(false); // 모달 닫기
+              },
+            });
           }}
           title="운송 취소하시겠습니까?"
           subTitle="취소 시 운송 완료가 처리되지 않습니다"
@@ -245,11 +239,11 @@ export const PostDetailPage = () => {
           setIsOpen={setIsCompletePayment}
           isOpen={isCompletePayment}
           onClick={() => {
-            setTransportInfo((prev) => ({
-              ...prev,
-              isPaymentCompleted: true,
-            }));
-            setIsCompletePayment(false);
+            deliveryCollectApi.mutate(undefined, {
+              onSuccess: () => {
+                setIsCompletePayment(false); // 모달 닫기
+              },
+            });
           }}
           title="수금 완료하시겠습니까?"
           subTitle="수금이 완료되면 해당 내역이 저장됩니다"
@@ -261,11 +255,11 @@ export const PostDetailPage = () => {
           setIsOpen={setIsCancelPayment}
           isOpen={isCancelPayment}
           onClick={() => {
-            setTransportInfo((prev) => ({
-              ...prev,
-              isPaymentCompleted: false,
-            }));
-            setIsCancelPayment(false); // 모달 닫기
+            deliveryCollectCancelApi.mutate(undefined, {
+              onSuccess: () => {
+                setIsCancelPayment(false); // 모달 닫기
+              },
+            });
           }}
           title="수금 취소하시겠습니까?"
           subTitle="취소 시 수금 완료가 처리되지 않습니다"
