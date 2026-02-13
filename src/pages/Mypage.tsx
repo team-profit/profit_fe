@@ -1,17 +1,25 @@
 import { useState } from 'react';
 import { colors, Flex, Text } from '../design-token';
-import styled from '@emotion/styled';
+import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
 
 export const Mypage = () => {
-  const [datas, _] = useState<{
+  const [datas] = useState<{
     name: string;
     email: string;
-    totalProfit: number;
   }>({
-    name: '김00',
-    email: 'kimkim@gmail.com',
-    totalProfit: 100000,
+    name: import.meta.env.VITE_NAME,
+    email: import.meta.env.VITE_EMAIL,
   });
+
+  const navigate = useNavigate();
+
+  const handleLogoutClick = () => {
+    Cookies.remove('accessToken', { path: '/' });
+    Cookies.remove('refreshToken', { path: '/' });
+
+    navigate('/');
+  };
   return (
     <Flex
       height="80vh"
@@ -28,14 +36,19 @@ export const Mypage = () => {
             {datas.email}
           </Text>
         </Flex>
-        <StatusContent>
-          이번 년도 총 수익은 {datas.totalProfit}원입니다
-        </StatusContent>
       </Flex>
+
       <Flex gap={16} width="100%" justifyContent="center" alignItems="center">
-        <Text isCursor fontSize={16} fontWeight={400} color={colors.gray[600]}>
+        <Text
+          isCursor
+          fontSize={16}
+          fontWeight={400}
+          color={colors.gray[600]}
+          onClick={handleLogoutClick}
+        >
           로그아웃
         </Text>
+
         <Text isCursor fontSize={16} fontWeight={400} color={colors.gray[600]}>
           회원탈퇴
         </Text>
@@ -43,17 +56,3 @@ export const Mypage = () => {
     </Flex>
   );
 };
-
-const StatusContent = styled.div`
-  width: 100%;
-  border: 1px solid ${colors.gray[100]};
-  background-color: ${colors.gray[50]};
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  padding: 6px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 600;
-  color: ${colors.gray[800]};
-`;
