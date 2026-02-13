@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { LOGO, ALARM } from '../assets';
+import { LOGO } from '../assets';
 import { colors, Flex } from '../design-token';
 import { useNavigate } from 'react-router-dom';
 
@@ -19,9 +19,9 @@ export const Header = () => {
         <Btn onClick={() => navigate('/main/home')}>
           <LOGO width={83} height={22} />
         </Btn>
-        <Btn onClick={() => navigate('/main/notification')}>
+        {/* <Btn onClick={() => navigate('/main/notification')}>
           <ALARM />
-        </Btn>
+        </Btn> */}
       </Flex>
     </HeaderWrapper>
   );
