@@ -5,31 +5,32 @@ import Calendar from 'react-calendar';
 import { motion, AnimatePresence } from 'framer-motion';
 import { colors, Flex, Text } from '../design-token';
 import { PostContent } from './PostContent';
+import { useNavigate } from 'react-router-dom';
 
 type CalendarItem = {
+  deliveryId: number;
   place: string;
-  time: { startTime: string; endTime: string };
+  time: { startTime: string; endTime: string | null };
 };
 
-type CalendarData = Record<string, CalendarItem[]>;
-
-const calendarData: CalendarData = {
-  '2026-02-06': [
-    { place: '일정 1', time: { startTime: '10:10', endTime: '10:40' } },
-    { place: '일정 2', time: { startTime: '11:00', endTime: '12:00' } },
-  ],
-  '2026-02-10': [
-    { place: '일정 1', time: { startTime: '10:10', endTime: '10:40' } },
-  ],
-};
-
-type CalendarContentProps = {
+interface ICalendarContentType {
   onMonthChange?: (year: number, month: number) => void;
-};
+  calendarData: Record<string, CalendarItem[]>;
+  dailySummary: Record<
+    string,
+    { netProfit: number; receivedAmount: number; totalExpenseAmount: number }
+  >;
+}
 
-export const CalendarContent = ({ onMonthChange }: CalendarContentProps) => {
+export const CalendarContent = ({
+  onMonthChange,
+  calendarData,
+  dailySummary,
+}: ICalendarContentType) => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [_, setActiveStartDate] = useState<Date>(new Date());
+
+  const navigate = useNavigate();
 
   const hasData = (date: Date) => {
     const key = date.toISOString().split('T')[0];
@@ -44,7 +45,7 @@ export const CalendarContent = ({ onMonthChange }: CalendarContentProps) => {
     if (activeStartDate) {
       setActiveStartDate(activeStartDate);
       const year = activeStartDate.getFullYear();
-      const month = activeStartDate.getMonth() + 1; // 0-based이므로 +1
+      const month = activeStartDate.getMonth() + 1;
       onMonthChange?.(year, month);
     }
   };
@@ -52,6 +53,8 @@ export const CalendarContent = ({ onMonthChange }: CalendarContentProps) => {
   const selectedKey = selectedDate
     ? selectedDate.toISOString().split('T')[0]
     : null;
+
+  const selectedSummary = selectedKey ? dailySummary[selectedKey] : null;
 
   return (
     <Container>
@@ -64,6 +67,7 @@ export const CalendarContent = ({ onMonthChange }: CalendarContentProps) => {
             gap: 12px;
             margin-bottom: 12px;
           }
+
           .react-calendar__navigation button {
             width: 32px;
             height: 32px;
@@ -73,34 +77,41 @@ export const CalendarContent = ({ onMonthChange }: CalendarContentProps) => {
             align-items: center;
             justify-content: center;
           }
+
           .react-calendar__navigation__label span {
             font-size: 16px;
             font-weight: 400;
           }
+
           .react-calendar {
             width: 100%;
             border: none;
             background-color: white;
           }
+
           .react-calendar__month-view__weekdays {
             display: flex;
             justify-content: center;
             margin-bottom: 8px;
           }
+
           .react-calendar__month-view__weekdays__weekday {
             flex: 1;
             text-align: center;
           }
+
           .react-calendar__month-view__weekdays__weekday abbr {
             text-decoration: none;
             font-weight: 600;
           }
+
           .react-calendar__month-view__days {
             display: grid !important;
             grid-template-columns: repeat(7, 1fr);
             gap: 32px 8px;
             justify-items: center;
           }
+
           .react-calendar__tile {
             width: 28px;
             height: 28px;
@@ -113,10 +124,12 @@ export const CalendarContent = ({ onMonthChange }: CalendarContentProps) => {
             justify-content: center;
             font-size: 12px;
           }
+
           .react-calendar__tile--now {
             background: ${colors.blue[400]};
             color: ${colors.gray[0]};
           }
+
           .react-calendar__month-view__days__day--neighboringMonth {
             visibility: hidden;
           }
@@ -144,14 +157,6 @@ export const CalendarContent = ({ onMonthChange }: CalendarContentProps) => {
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              drag="y"
-              dragConstraints={{ top: 0 }}
-              dragElastic={0.2}
-              onDragEnd={(_, info) => {
-                if (info.offset.y > 120) {
-                  setSelectedDate(null);
-                }
-              }}
             >
               <Handle />
 
@@ -160,27 +165,40 @@ export const CalendarContent = ({ onMonthChange }: CalendarContentProps) => {
               </Text>
 
               <TotalRevenueContent>
-                <Text fontSize={12} fontWeight={600}>
-                  총 수익 : 400,000원
-                </Text>
-                <Text fontSize={12} fontWeight={600}>
-                  순 수익 : 400,000원
-                </Text>
-                <Text fontSize={12} fontWeight={600}>
-                  지출 금액 : 400,000원
-                </Text>
+                {selectedSummary ? (
+                  <>
+                    <Text fontSize={12} fontWeight={600}>
+                      순 수익 : {selectedSummary.netProfit.toLocaleString()}원
+                    </Text>
+                    <Text fontSize={12} fontWeight={600}>
+                      받은 금액 :{' '}
+                      {selectedSummary.receivedAmount.toLocaleString()}원
+                    </Text>
+                    <Text fontSize={12} fontWeight={600}>
+                      지출 금액 :{' '}
+                      {selectedSummary.totalExpenseAmount.toLocaleString()}원
+                    </Text>
+                  </>
+                ) : (
+                  <Text fontSize={12}>정산 정보 없음</Text>
+                )}
               </TotalRevenueContent>
 
-              {calendarData[selectedKey!] ? (
-                <Flex isColumn gap={12}>
-                  {calendarData[selectedKey!].map((data, index) => (
-                    <PostContent
-                      key={index}
-                      place={data.place}
-                      time={data.time}
-                    />
-                  ))}
-                </Flex>
+              {selectedKey && calendarData[selectedKey] ? (
+                <PostContentWrapper>
+                  <Flex isColumn gap={12}>
+                    {calendarData[selectedKey].map((data) => (
+                      <PostContent
+                        key={data.deliveryId}
+                        place={data.place}
+                        time={data.time}
+                        onClick={() =>
+                          navigate(`/main/detail/${data.deliveryId}`)
+                        }
+                      />
+                    ))}
+                  </Flex>
+                </PostContentWrapper>
               ) : (
                 <Text fontSize={12} color={colors.gray[600]}>
                   일정이 존재하지 않습니다
@@ -224,12 +242,14 @@ const Popup = styled(motion.div)`
   padding: 16px 24px 24px;
   background: white;
   border-radius: 30px 30px 0 0;
-  box-shadow: 0 4px 20px rgba(183, 183, 183, 0.325);
   display: flex;
   flex-direction: column;
   gap: 12px;
-  overflow-y: auto;
-  touch-action: pan-y;
+`;
+
+const PostContentWrapper = styled.div`
+  overflow: scroll;
+  width: 100%;
 `;
 
 const Handle = styled.div`
