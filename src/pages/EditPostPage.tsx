@@ -1,14 +1,17 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ADDICON } from '../assets';
 import { Content, Inputs, SmallButton, SubTitleField } from '../components';
 import { colors, Flex, Text } from '../design-token';
 import styled from '@emotion/styled';
 import { ShipperInfo, TransportInfo } from '../types';
 import DaumPostcode from 'react-daum-postcode';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ko } from 'date-fns/locale';
+import { useDeliveryDetailGet, useDeliveryEditPatch } from '../apis';
+import { formatDateTimeDisplay } from '../hooks';
+import { IDeliveryEditRequest } from '../apis/deliveries/types';
 
 export const EditPostPage = () => {
   const [transportInfo, setTransportInfo] = useState<TransportInfo>({
@@ -50,6 +53,35 @@ export const EditPostPage = () => {
   }>({ show: false, type: null });
 
   const navigate = useNavigate();
+
+  const { id } = useParams();
+  const deliveryId = Number(id);
+
+  const deliveryCreateApi = useDeliveryEditPatch(deliveryId);
+
+  const { data } = useDeliveryDetailGet(deliveryId);
+
+  useEffect(() => {
+    if (!data) return;
+
+    setTransportInfo({
+      receivedAmount: data.transportInfo.receivedAmount,
+      expenses: data.transportInfo.expenses,
+      loadingLocation: data.transportInfo.loadingLocation,
+      unloadingLocation: data.transportInfo.unloadingLocation,
+      dateAndTime: {
+        startDateAndTime:
+          data.transportInfo.dateAndTime?.startDateAndTime ?? '',
+        endDateAndTime: data.transportInfo.dateAndTime?.endDateAndTime ?? null,
+      },
+      netProfit: data.transportInfo.netProfit,
+      totalExpenseAmount: data.transportInfo.totalExpenseAmount,
+      isPaymentCompleted: data.transportInfo.isPaymentCompleted,
+      isTransportCompleted: data.transportInfo.isTransportCompleted,
+    });
+
+    setShipperInfo(data.shipperInfo);
+  }, [data]);
 
   const handleTransportChange = (
     key: 'receivedAmount' | 'loadingLocation' | 'unloadingLocation',
@@ -96,8 +128,8 @@ export const EditPostPage = () => {
       setTransportInfo((prev) => ({
         ...prev,
         [showPostcode.type!]: {
-          address: data.roadAddress || data.jibunAddress,
-          detailAddress: data.buildingName || '',
+          address: data.roadAddress || data.buildingName,
+          detailAddress: data.jibunAddress || '',
           postalAddress: data.zonecode,
         },
       }));
@@ -109,10 +141,23 @@ export const EditPostPage = () => {
     setShowDatePicker({ show: true, type });
   };
 
+  const toLocalISOString = (date: Date) => {
+    const pad = (num: number) => num.toString().padStart(2, '0');
+
+    return (
+      `${date.getFullYear()}-` +
+      `${pad(date.getMonth() + 1)}-` +
+      `${pad(date.getDate())}T` +
+      `${pad(date.getHours())}:` +
+      `${pad(date.getMinutes())}:` +
+      `${pad(date.getSeconds())}`
+    );
+  };
+
   const handleDateChange = (date: Date | null) => {
     if (!date || !showDatePicker.type) return;
 
-    const formattedDate = date.toISOString().replace('T', ':').slice(0, 19);
+    const formattedDate = toLocalISOString(date);
 
     setTransportInfo((prev) => ({
       ...prev,
@@ -131,28 +176,37 @@ export const EditPostPage = () => {
     setShowDatePicker({ show: false, type: null });
   };
 
-  const formatDateTimeDisplay = (dateString?: string) => {
-    if (!dateString) return '';
-    return dateString.replace(':', ' ').replace(/:/g, ':');
-  };
-
   const getSelectedDate = () => {
-    if (!showDatePicker.type) return new Date();
+    if (!showDatePicker.type) return null;
 
     const dateString =
       showDatePicker.type === 'start'
         ? transportInfo.dateAndTime?.startDateAndTime
         : transportInfo.dateAndTime?.endDateAndTime;
 
-    if (dateString) {
-      return new Date(dateString.replace(':', 'T'));
-    }
-    return new Date();
+    return dateString ? new Date(dateString) : null;
   };
 
   const handleEditClick = () => {
-    //수정 api
-    navigate('/main/home');
+    const body: IDeliveryEditRequest = {
+      transportInfo: {
+        receivedAmount: Number(transportInfo.receivedAmount),
+        expenses: transportInfo.expenses,
+        loadingLocation: transportInfo.loadingLocation,
+        unloadingLocation: transportInfo.unloadingLocation,
+        dateAndTime: {
+          startDateAndTime: transportInfo.dateAndTime?.startDateAndTime ?? '',
+          endDateAndTime: transportInfo.dateAndTime?.endDateAndTime ?? null,
+        },
+      },
+      shipperInfo,
+    };
+
+    deliveryCreateApi.mutate(body, {
+      onSuccess: () => {
+        navigate(`/main/detail/${deliveryId}`);
+      },
+    });
   };
 
   return (
@@ -238,7 +292,7 @@ export const EditPostPage = () => {
         <Flex gap={8} alignItems="end" width="100%">
           <Inputs
             value={formatDateTimeDisplay(
-              transportInfo.dateAndTime?.startDateAndTime,
+              transportInfo?.dateAndTime?.startDateAndTime,
             )}
             placeholder="상차시간을 입력하세요"
             isBlocked
@@ -251,7 +305,7 @@ export const EditPostPage = () => {
         <Flex gap={8} alignItems="end" width="100%">
           <Inputs
             value={formatDateTimeDisplay(
-              transportInfo.dateAndTime?.endDateAndTime,
+              transportInfo?.dateAndTime?.endDateAndTime,
             )}
             placeholder="하차시간을 입력하세요"
             isBlocked
@@ -325,9 +379,8 @@ export const EditPostPage = () => {
             <DatePicker
               selected={getSelectedDate()}
               onChange={handleDateChange}
-              showTimeSelect
-              timeFormat="HH:mm"
               timeIntervals={1}
+              showTimeSelect
               dateFormat="yyyy-MM-dd HH:mm"
               locale={ko}
               inline
