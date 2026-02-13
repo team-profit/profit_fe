@@ -4,6 +4,7 @@ import { Inputs, LargeButton } from '../components';
 import { colors, Flex, Text } from '../design-token';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
+import { useLoginPost } from '../apis';
 
 export const LoginPage = () => {
   const [datas, setDatas] = useState<{ id: string; password: string }>({
@@ -11,11 +12,28 @@ export const LoginPage = () => {
     password: '',
   });
 
+  const navigate = useNavigate();
+
   const onChange = (key: 'id' | 'password', value: string) => {
     setDatas((prev) => ({ ...prev, [key]: value }));
   };
 
-  const navigate = useNavigate();
+  const loginApi = useLoginPost();
+
+  const handleLoginClick = () => {
+    loginApi.mutate(
+      {
+        id: datas.id,
+        password: datas.password,
+      },
+      {
+        onSuccess: () => {
+          navigate('/main/home');
+        },
+      },
+    );
+  };
+
   return (
     <Flex alignItems="center" paddingTop="78px" isColumn gap={200} width="100%">
       <Flex isColumn gap={98} width="100%">
@@ -46,7 +64,7 @@ export const LoginPage = () => {
         </Flex>
       </Flex>
       <BtnWrapper>
-        <LargeButton width="100%" onClick={() => navigate('/main/home')}>
+        <LargeButton width="100%" onClick={handleLoginClick}>
           로그인
         </LargeButton>
       </BtnWrapper>
