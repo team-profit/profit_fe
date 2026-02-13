@@ -21,5 +21,5 @@ export interface TransportInfo {
   totalExpenseAmount?: number; // 총 지출 금액
   loadingLocation: LocationInfo; // 상차 위치
   unloadingLocation: LocationInfo; // 하차 위치
-  dateAndTime?: { startDateAndTime: string; endDateAndTime: string }; //상차, 하차 시간
+  dateAndTime?: { startDateAndTime: string; endDateAndTime: string | null }; //상차, 하차 시간
 }
