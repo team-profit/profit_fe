@@ -1,7 +1,20 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
+import { useEffect } from 'react';
+import Cookies from 'js-cookie';
 
 export const AppLayout = () => {
+  const navigate = useNavigate();
+  useEffect(() => {
+    const accessToken = Cookies.get('accessToken');
+
+    if (accessToken) {
+      navigate('/main/home', { replace: true });
+    } else {
+      navigate('/login', { replace: true });
+    }
+  }, []);
+
   return (
     <div>
       <Main>
