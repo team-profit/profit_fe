@@ -6,6 +6,8 @@ import styled from '@emotion/styled';
 import { ShipperInfo, TransportInfo } from '../types';
 import DaumPostcode from 'react-daum-postcode';
 import { useNavigate } from 'react-router-dom';
+import { useDeliveryCreatePost } from '../apis';
+import { IDeliveryCreateRequest } from '../apis/deliveries/types';
 
 export const AddPostPage = () => {
   const [transportInfo, setTransportInfo] = useState<TransportInfo>({
@@ -38,6 +40,7 @@ export const AddPostPage = () => {
   }>({ show: false, type: null });
 
   const navigate = useNavigate();
+  const deliveryCreateApi = useDeliveryCreatePost();
 
   const handleTransportChange = (
     key: 'receivedAmount' | 'loadingLocation' | 'unloadingLocation',
@@ -84,8 +87,8 @@ export const AddPostPage = () => {
       setTransportInfo((prev) => ({
         ...prev,
         [showPostcode.type!]: {
-          address: data.roadAddress || data.jibunAddress,
-          detailAddress: data.buildingName || '',
+          address: data.roadAddress || data.buildingName,
+          detailAddress: data.jibunAddress || '',
           postalAddress: data.zonecode,
         },
       }));
@@ -95,7 +98,21 @@ export const AddPostPage = () => {
 
   const handleCreateClick = () => {
     //생성 api
-    navigate('/main/home');
+    const body: IDeliveryCreateRequest = {
+      transportInfo: {
+        receivedAmount: Number(transportInfo.receivedAmount),
+        expenses: transportInfo.expenses,
+        loadingLocation: transportInfo.loadingLocation,
+        unloadingLocation: transportInfo.unloadingLocation,
+      },
+      shipperInfo,
+    };
+
+    deliveryCreateApi.mutate(body, {
+      onSuccess: () => {
+        navigate('/main/home');
+      },
+    });
   };
 
   return (
