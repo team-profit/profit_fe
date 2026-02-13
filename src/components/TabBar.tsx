@@ -150,5 +150,5 @@ const NavWrapper = styled.nav`
   height: 60px;
   border-top: 1px solid ${colors.gray[100]};
   background-color: ${colors.gray[0]};
-  z-index: 100;
+  z-index: 10;
 `;
