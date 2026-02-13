@@ -1,8 +1,10 @@
 import { Global, css } from '@emotion/react';
 
 const style = css`
-  @import url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.3.9/dist/web/static/pretendard.css');
-
+  @font-face {
+    font-family: 'Pretendard';
+    src: url('/PretendardVariable.ttf');
+  }
   * {
     margin: 0;
     padding: 0;
