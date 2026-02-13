@@ -166,7 +166,11 @@ export const useDeliveryCreatePost = () => {
       toast.success('게시물이 정상적으로 생성되었습니다.');
 
       queryClient.invalidateQueries({
-        queryKey: ['today-list', 'deliveries'],
+        queryKey: ['today-list'],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ['deliveries'],
       });
     },
     onError: (error) => {
