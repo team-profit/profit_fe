@@ -153,6 +153,15 @@ export const CalendarContent = ({
             />
 
             <Popup
+              drag="y"
+              dragDirectionLock
+              dragConstraints={{ top: 0 }}
+              dragElastic={0.2}
+              onDragEnd={(_, info) => {
+                if (info.offset.y > 120) {
+                  setSelectedDate(null);
+                }
+              }}
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
