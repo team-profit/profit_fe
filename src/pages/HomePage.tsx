@@ -1,28 +1,24 @@
-import { useState } from 'react';
 import { colors, Flex, Text } from '../design-token';
 import { PostContent } from '../components';
 import { useNavigate } from 'react-router-dom';
+import { useTodayListGet } from '../apis';
 
 export const HomePage = () => {
-  const [datas, _] = useState<
-    {
-      id: number;
-      place: string;
-      time: { startTime: string; endTime: string };
-    }[]
-  >([
-    {
-      id: 1,
-      place: '경주시장',
-      time: { startTime: '10:00', endTime: '12:00' },
-    },
-  ]);
-
   const navigate = useNavigate();
 
   const today = new Date();
   const month = today.getMonth() + 1;
   const date = today.getDate();
+
+  const { data, isLoading } = useTodayListGet();
+
+  if (isLoading) return <div>로딩중...</div>;
+
+  const todayList = data?.todayList ?? [];
+
+  if (isLoading) {
+    return <div>로딩중...</div>;
+  }
 
   return (
     <Flex isColumn gap={20} paddingTop="26px" width="100%">
@@ -30,27 +26,29 @@ export const HomePage = () => {
         <Text isSpan fontSize={16} fontWeight={400}>
           총{' '}
           <Text isSpan fontSize={16} fontWeight={600} color={colors.blue[800]}>
-            {datas.length}건
+            {todayList.length}건
           </Text>
         </Text>
+
         <Text isSpan fontSize={20} fontWeight={600} color={colors.gray[900]}>
           {month}
-          <Text isSpan fontSize={16} fontWeight={400} color={colors.gray[900]}>
+          <Text isSpan fontSize={16} fontWeight={400}>
             월
           </Text>
           {date}
-          <Text isSpan fontSize={16} fontWeight={400} color={colors.gray[900]}>
+          <Text isSpan fontSize={16} fontWeight={400}>
             일
           </Text>
         </Text>
       </Flex>
+
       <Flex width="100%" isColumn gap={12}>
-        {datas.map((data) => (
+        {todayList.map((item) => (
           <PostContent
-            onClick={() => navigate(`/main/detail/${data.id}`)}
-            place={data.place}
-            key={data.id}
-            time={data.time}
+            key={item.deliveryId}
+            onClick={() => navigate(`/main/detail/${item.deliveryId}`)}
+            place={item.place}
+            time={item.time}
           />
         ))}
       </Flex>
